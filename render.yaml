@@ -26,8 +26,8 @@ services:
     env: static
     repo: https://github.com/yourusername/streamflow
     rootDir: frontend
-    buildCommand: npm run build
-    staticPublishPath: dist
+    buildCommand: "npm run build"
+    publishPath: "dist"
     envVars:
       - key: VITE_API_URL
         value: https://streamflow-0kxp.onrender.com
