@@ -14,15 +14,13 @@ const Landing = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Loading animation
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoaded(true);
-    }, 100); // Small delay for smooth animation
+    }, 100);
     return () => clearTimeout(timer);
   }, []);
 
-  // Enhanced smooth scroll for anchor links
   useEffect(() => {
     const handleSmoothScroll = (e) => {
       const targetId = e.target.getAttribute("href");
@@ -31,9 +29,9 @@ const Landing = () => {
         const targetElement = document.querySelector(targetId);
         if (targetElement) {
           const startPosition = window.pageYOffset;
-          const targetPosition = targetElement.offsetTop - 80; // Account for fixed navbar
+          const targetPosition = targetElement.offsetTop - 80;
           const distance = targetPosition - startPosition;
-          const duration = 800; // milliseconds
+          const duration = 800;
           let start = null;
 
           const easeInOutCubic = (t) => {
@@ -74,17 +72,15 @@ const Landing = () => {
     };
   }, []);
 
-  // Auto-scroll animation
   useEffect(() => {
     const scrollContainer = document.getElementById('testimonials-scroll');
     if (scrollContainer) {
       let scrollPosition = 0;
-      const scrollSpeed = 1; // pixels per frame
+      const scrollSpeed = 1;
 
       const animate = () => {
         scrollPosition += scrollSpeed;
 
-        // Reset when reaching the end
         if (scrollPosition >= scrollContainer.scrollWidth / 2) {
           scrollPosition = 0;
         }
