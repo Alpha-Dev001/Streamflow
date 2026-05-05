@@ -47,7 +47,7 @@ const Discover = () => {
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto">
           {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4" style={{ overflow: 'hidden' }}>
               {[...Array(6)].map((_, i) => (
                 <LoadingSkeleton key={i} variant="stream" />
               ))}

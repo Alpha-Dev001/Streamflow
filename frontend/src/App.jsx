@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import Watch from "./pages/Watch";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import NotFound from "./pages/NotFound";
 
 const ProtectedRoute = ({ children }) => {
   const { isLoggedIn, loading } = useAuth();
@@ -58,7 +59,7 @@ const AppRoutes = () => {
         <Route path="/discover" element={<Navigate to="/app/discover" replace />} />
         <Route path="/dashboard" element={<Navigate to="/app/dashboard" replace />} />
 
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </SocketProvider>
   );

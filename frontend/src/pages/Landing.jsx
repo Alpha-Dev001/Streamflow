@@ -4,6 +4,7 @@ import { Play, Users, Shield, Zap, ArrowRight, CheckCircle, BarChart3, Globe, Cl
 
 const Landing = () => {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -11,6 +12,14 @@ const Landing = () => {
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Loading animation
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoaded(true);
+    }, 100); // Small delay for smooth animation
+    return () => clearTimeout(timer);
   }, []);
 
   // Enhanced smooth scroll for anchor links
@@ -167,7 +176,7 @@ const Landing = () => {
       name: "Jessica Park",
       role: "Fitness Instructor",
       content: "I can reach my global audience with zero buffering. The platform is incredibly reliable.",
-      rating: 5
+      rating: 4
     },
     {
       name: "David Martinez",
@@ -185,7 +194,7 @@ const Landing = () => {
       name: "James Wilson",
       role: "Educational Streamer",
       content: "Teaching online has never been easier. The platform handles everything perfectly.",
-      rating: 5
+      rating: 4
     }
   ];
 
@@ -195,7 +204,8 @@ const Landing = () => {
       {/* Hero Section - Apple/MacBook Style */}
       <section className="relative min-h-screen flex items-center justify-center bg-black">
         {/* Minimal Navigation */}
-        <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-xl border-b border-white/10">
+        <nav className={`fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-xl border-b border-white/10 transition-all duration-1000 ease-out ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'
+          }`}>
           <div className="max-w-6xl mx-auto px-6 py-6 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-black rounded-lg flex items-center justify-center">
@@ -219,7 +229,8 @@ const Landing = () => {
         </nav>
 
         {/* Hero Content */}
-        <div className="max-w-6xl mx-auto px-6 text-center pt-20">
+        <div className={`max-w-6xl mx-auto px-6 text-center pt-20 transition-all duration-1000 ease-out ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+          }`}>
           <h1 className="text-6xl md:text-8xl font-thin text-white mb-6 leading-tight">
             Streaming.
             <br />
@@ -446,7 +457,7 @@ const Landing = () => {
           <div className="pt-16 border-t border-white/10">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               <p className="text-white/40 text-sm">
-                © 2024 StreamFlow. All rights reserved.
+                © 2026 StreamFlow. All rights reserved.
               </p>
               <div className="flex items-center gap-6">
                 <Link to="/login" className="text-white/60 text-sm hover:text-white transition-colors">Sign In</Link>

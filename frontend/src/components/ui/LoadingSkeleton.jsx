@@ -112,9 +112,9 @@ const LoadingSkeleton = ({
           }}
         />
         {/* Live badge skeleton */}
-        <div className="absolute top-3 left-3">
+        <div className="absolute top-2 left-2">
           <div
-            className="bg-black/40 backdrop-blur-md border border-white/5 px-3 py-1.5 rounded-full"
+            className="bg-black/40 backdrop-blur-md border border-white/5 px-2 py-1 rounded-full text-xs"
             style={{
               animation: 'shimmer 2s ease-in-out infinite',
               background: 'linear-gradient(90deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.1) 100%)',
@@ -124,9 +124,9 @@ const LoadingSkeleton = ({
           />
         </div>
         {/* Viewer count skeleton */}
-        <div className="absolute top-3 right-3">
+        <div className="absolute top-2 right-2">
           <div
-            className="bg-black/40 backdrop-blur-md border border-white/5 px-3 py-1.5 rounded-md"
+            className="bg-black/40 backdrop-blur-md border border-white/5 px-2 py-1 rounded-full text-xs"
             style={{
               animation: 'shimmer 2s ease-in-out infinite',
               background: 'linear-gradient(90deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.3) 100%)',
@@ -138,20 +138,20 @@ const LoadingSkeleton = ({
       </div>
 
       {/* Info section skeleton */}
-      <div className="p-4">
-        <div className="flex items-start gap-3">
+      <div className="p-3">
+        <div className="flex items-start gap-2">
           {/* Avatar skeleton */}
           <div
-            className="rounded-full w-8 h-8 flex-shrink-0 border border-white/5"
+            className={`${baseClasses} rounded-full w-6 h-6 flex-shrink-0 border border-white/5`}
             style={{
               ...animationStyle,
               background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 100%)'
             }}
           />
-          <div className="flex-1 min-w-0 space-y-2">
+          <div className="flex-1 min-w-0 space-y-1">
             {/* Title skeleton */}
             <div
-              className="h-4 rounded"
+              className={`${baseClasses} h-3 rounded`}
               style={{
                 ...animationStyle,
                 background: 'linear-gradient(90deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 100%)'
@@ -159,7 +159,7 @@ const LoadingSkeleton = ({
             />
             {/* Username skeleton */}
             <div
-              className="h-3 rounded w-2/3"
+              className={`${baseClasses} h-2 rounded w-2/3`}
               style={{
                 ...animationStyle,
                 background: 'linear-gradient(90deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.03) 100%)'
@@ -167,7 +167,7 @@ const LoadingSkeleton = ({
             />
             {/* Category tag skeleton */}
             <div
-              className="h-3 w-16 rounded"
+              className={`${baseClasses} h-2 w-12 rounded text-xs`}
               style={{
                 ...animationStyle,
                 background: 'linear-gradient(90deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.04) 50%, rgba(255,255,255,0.02) 100%)'
@@ -176,6 +176,9 @@ const LoadingSkeleton = ({
           </div>
         </div>
       </div>
+
+      {/* Extra space at bottom */}
+      <div className="h-2"></div>
     </div>
   );
 

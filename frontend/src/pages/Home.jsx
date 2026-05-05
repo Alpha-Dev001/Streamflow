@@ -37,7 +37,7 @@ const Home = () => {
       {/* Main Content */}
       <main className="flex-1 flex flex-col" style={{ height: 'calc(100vh - 64px)' }}>
         {/* Fixed Header */}
-        <div className="flex-shrink-0 mb-8">
+        <div className="flex-shrink-0 mb-8 slide-up">
           <div className="flex items-center gap-2 mb-1">
             <Radio size={16} className="text-red-500" />
             <span className="text-red-500 text-xs font-medium uppercase tracking-widest">Live Now</span>
@@ -53,7 +53,7 @@ const Home = () => {
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto">
           {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4" style={{ overflow: 'hidden' }}>
               {[...Array(6)].map((_, i) => (
                 <LoadingSkeleton key={i} variant="stream" />
               ))}
@@ -71,7 +71,9 @@ const Home = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 pb-8">
               {streams.map((stream) => (
-                <StreamCard key={stream._id} stream={stream} />
+                <div key={stream._id} className="stagger-fade-in">
+                  <StreamCard stream={stream} />
+                </div>
               ))}
             </div>
           )}
@@ -79,7 +81,7 @@ const Home = () => {
       </main>
 
       {/* Category Sidebar - Fixed */}
-      <aside className="w-64 flex-shrink-0 overflow-hidden">
+      <aside className="w-64 flex-shrink-0 overflow-hidden slide-up">
         <div className="glass-card p-6 h-full">
           <div className="flex items-center gap-2 mb-4">
             <Filter size={16} className="text-gray-400" />
