@@ -1,5 +1,5 @@
 // Base URL for all API calls
-const BASE_URL = "/api";
+const BASE_URL = import.meta.env.VITE_API_URL || "/api";
 
 // Helper: get auth token from localStorage
 const getToken = () => localStorage.getItem("token");

@@ -1,0 +1,33 @@
+services:
+  # Backend Service
+  - type: web
+    name: streamflow-backend
+    env: node
+    repo: https://github.com/yourusername/streamflow
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: MONGODB_URI
+        sync: false  # Set manually in dashboard
+      - key: JWT_SECRET
+        sync: false  # Set manually in dashboard
+      - key: FRONTEND_URL
+        sync: false  # Set manually in dashboard
+
+  # Frontend Service
+  - type: web
+    name: streamflow-frontend
+    env: static
+    repo: https://github.com/yourusername/streamflow
+    rootDir: frontend
+    buildCommand: npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        sync: false  # Set manually in dashboard

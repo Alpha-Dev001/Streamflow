@@ -10,9 +10,10 @@ export const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     // Connect to the backend Socket.io server
-    const newSocket = io("http://localhost:5000", {
+    const socketUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+    const newSocket = io(socketUrl, {
       auth: {
-        // Send token so the server knows who we are
+        // Send token so that server knows who we are
         token: localStorage.getItem("token"),
       },
     });
