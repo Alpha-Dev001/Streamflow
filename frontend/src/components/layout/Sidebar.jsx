@@ -29,7 +29,7 @@ const Sidebar = () => {
       <div className="p-6 mb-2">
         <div className="flex items-center gap-2">
           <img
-            src="/logo.png"
+            src="/logo.svg"
             alt="StreamFlow Logo"
             className="w-8 h-8 object-contain"
           />

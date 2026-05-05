@@ -206,7 +206,7 @@ const Landing = () => {
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-black rounded-lg flex items-center justify-center">
                 <img
-                  src="/logo.png"
+                  src="/logo.svg"
                   alt="StreamFlow"
                   className="w-10 h-10 object-contain"
                 />
@@ -406,7 +406,7 @@ const Landing = () => {
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 bg-black rounded-lg flex items-center justify-center">
                   <img
-                    src="/logo.png"
+                    src="/logo.svg"
                     alt="StreamFlow"
                     className="w-10 h-10 object-contain"
                   />

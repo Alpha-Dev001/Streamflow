@@ -43,7 +43,7 @@ const Login = () => {
         {/* Logo */}
         <div className="flex items-center justify-center gap-2 mb-8">
           <img
-            src="/logo.png"
+            src="/logo.svg"
             alt="StreamFlow Logo"
             className="w-8 h-8 object-contain"
           />
