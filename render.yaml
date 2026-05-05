@@ -30,4 +30,4 @@ services:
     staticPublishPath: dist
     envVars:
       - key: VITE_API_URL
-        sync: false  # Set manually in dashboard
+        value: https://streamflow-0kxp.onrender.com
