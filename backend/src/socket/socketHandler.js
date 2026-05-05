@@ -21,9 +21,19 @@ const setupSocket = (io) => {
   });
 
   const rooms = new Map();
+  const connectionMetrics = new Map();
 
   io.on("connection", (socket) => {
     console.log(`🔌 Socket connected: ${socket.id}`);
+
+    // Track connection metrics
+    connectionMetrics.set(socket.id, {
+      connectedAt: Date.now(),
+      lastActivity: Date.now(),
+      packetsSent: 0,
+      packetsReceived: 0,
+      latency: 0
+    });
 
     socket.on("join-stream", async ({ streamId, role }) => {
       socket.join(streamId);
@@ -60,8 +70,15 @@ const setupSocket = (io) => {
 
     socket.on("webrtc-offer", ({ offer, viewerId }) => {
       console.log(`📡 Offer from broadcaster to viewer ${viewerId}`);
+      // Optimize offer transmission
+      const optimizedOffer = {
+        ...offer,
+        sdp: offer.sdp.replace(/a=fmtp:96 level-asymmetry-allowed=1;packetization-mode=1;profile-level-id=42e01f\r\n/g,
+          'a=fmtp:96 level-asymmetry-allowed=1;packetization-mode=0;profile-level-id=42e01f\r\n')
+      };
+
       io.to(viewerId).emit("webrtc-offer", {
-        offer,
+        offer: optimizedOffer,
         broadcasterId: socket.id,
       });
     });
@@ -108,8 +125,17 @@ const setupSocket = (io) => {
       }
     });
 
+    socket.on("ping", () => {
+      const metrics = connectionMetrics.get(socket.id);
+      if (metrics) {
+        metrics.lastActivity = Date.now();
+        socket.emit("pong", { timestamp: Date.now() });
+      }
+    });
+
     socket.on("disconnect", async () => {
       console.log(`🔌 Socket disconnected: ${socket.id}`);
+      connectionMetrics.delete(socket.id);
 
       const { streamId, role } = socket;
       if (!streamId) return;

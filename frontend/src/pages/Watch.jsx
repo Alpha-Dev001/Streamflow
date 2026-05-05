@@ -5,6 +5,7 @@ import { streamsAPI } from "../utils/api";
 import useViewer from "../hooks/useViewer";
 import Chat from "../components/stream/Chat";
 import { useSocket } from "../context/SocketContext";
+import LoadingSkeleton from "../components/ui/LoadingSkeleton";
 
 const Watch = () => {
   const { id } = useParams();
@@ -66,8 +67,31 @@ const Watch = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-500">Loading stream...</p>
+      <div className="min-h-screen flex flex-col bg-black">
+        <div className="p-4 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+          <LoadingSkeleton variant="text" lines={1} className="w-32 h-6" />
+        </div>
+        <div className="flex-1 flex gap-0 overflow-hidden" style={{ height: "calc(100vh - 60px)" }}>
+          <div className="flex-1 flex flex-col">
+            <div className="relative bg-black flex-1">
+              <LoadingSkeleton className="w-full h-full" />
+            </div>
+            <div className="p-4 border-t" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex items-center gap-3 flex-1">
+                  <LoadingSkeleton variant="circle" className="w-10 h-10" />
+                  <div className="flex-1">
+                    <LoadingSkeleton variant="text" lines={2} className="w-48" />
+                  </div>
+                </div>
+                <LoadingSkeleton variant="text" lines={1} className="w-20 h-8" />
+              </div>
+            </div>
+          </div>
+          <div className="w-96 flex-shrink-0 border-l" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+            <LoadingSkeleton className="h-full p-4" />
+          </div>
+        </div>
       </div>
     );
   }

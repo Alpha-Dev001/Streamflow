@@ -5,7 +5,19 @@ const ICE_SERVERS = {
   iceServers: [
     { urls: "stun:stun.l.google.com:19302" },
     { urls: "stun:stun1.l.google.com:19302" },
+    { urls: "stun:stun2.l.google.com:19302" },
+    {
+      urls: "turn:turn.relay.metered.ca:80",
+      username: "test",
+      credential: "test"
+    },
+    {
+      urls: "turn:turn.relay.metered.ca:443",
+      username: "test",
+      credential: "test"
+    }
   ],
+  iceCandidatePoolSize: 10,
 };
 
 const useBroadcast = (streamId, videoRef) => {
@@ -19,8 +31,17 @@ const useBroadcast = (streamId, videoRef) => {
 
       if (useScreenShare) {
         stream = await navigator.mediaDevices.getDisplayMedia({
-          video: { width: 1280, height: 720 },
-          audio: true,
+          video: {
+            width: { ideal: 1920, max: 1920 },
+            height: { ideal: 1080, max: 1080 },
+            frameRate: { ideal: 30, max: 60 },
+            displaySurface: 'monitor'
+          },
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            sampleRate: 48000
+          },
         });
 
         stream.getVideoTracks()[0].onended = () => {
@@ -28,8 +49,18 @@ const useBroadcast = (streamId, videoRef) => {
         };
       } else {
         stream = await navigator.mediaDevices.getUserMedia({
-          video: { width: 1280, height: 720 },
-          audio: true,
+          video: {
+            width: { ideal: 1280, max: 1920 },
+            height: { ideal: 720, max: 1080 },
+            frameRate: { ideal: 30, max: 60 },
+            aspectRatio: { ideal: 16 / 9 }
+          },
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true,
+            sampleRate: 48000
+          },
         });
       }
 
@@ -55,7 +86,13 @@ const useBroadcast = (streamId, videoRef) => {
 
   const createPeerForViewer = useCallback(
     async (viewerId) => {
-      const peer = new RTCPeerConnection(ICE_SERVERS);
+      const peer = new RTCPeerConnection({
+        ...ICE_SERVERS,
+        sdpSemantics: 'unified-plan',
+        bundlePolicy: 'max-bundle',
+        rtcpMuxPolicy: 'require',
+        iceTransportPolicy: 'all',
+      });
       peersRef.current[viewerId] = peer;
 
       localStreamRef.current.getTracks().forEach((track) => {

@@ -5,6 +5,7 @@ import useBroadcast from "../hooks/useBroadcast";
 import { useSocket } from "../context/SocketContext";
 import { useAuth } from "../context/AuthContext";
 import Chat from "../components/stream/Chat";
+import LoadingSkeleton from "../components/ui/LoadingSkeleton";
 
 const Dashboard = () => {
   const [stream, setStream] = useState(null);
@@ -15,6 +16,7 @@ const Dashboard = () => {
   const [copiedKey, setCopiedKey] = useState(false);
   const [editTitle, setEditTitle] = useState("");
   const [editCategory, setEditCategory] = useState("");
+  const [editThumbnailUrl, setEditThumbnailUrl] = useState("");
   const [saving, setSaving] = useState(false);
   const [isScreenSharing, setIsScreenSharing] = useState(false);
 
@@ -30,6 +32,7 @@ const Dashboard = () => {
         setStream(data.stream);
         setEditTitle(data.stream.title);
         setEditCategory(data.stream.category);
+        setEditThumbnailUrl(data.stream.thumbnailUrl || "");
       } catch (err) {
         setError(err.message);
       } finally {
@@ -92,7 +95,7 @@ const Dashboard = () => {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const data = await streamsAPI.updateMyStream({ title: editTitle, category: editCategory });
+      const data = await streamsAPI.updateMyStream({ title: editTitle, category: editCategory, thumbnailUrl: editThumbnailUrl });
       setStream(data.stream);
     } catch (err) {
       setError(err.message);
@@ -103,8 +106,17 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="p-8 flex items-center justify-center min-h-96">
-        <div className="text-gray-500">Loading your stream...</div>
+      <div className="min-h-screen flex flex-col">
+        <div className="p-8">
+          <div className="mb-8">
+            <LoadingSkeleton variant="text" lines={2} className="w-48" />
+          </div>
+        </div>
+        <div className="flex-1 flex gap-6 px-8 pb-8 overflow-hidden" style={{ marginRight: "330px" }}>
+          <div className="flex-1 flex flex-col gap-4 overflow-y-auto">
+            <LoadingSkeleton variant="dashboard" />
+          </div>
+        </div>
       </div>
     );
   }
@@ -218,7 +230,73 @@ const Dashboard = () => {
           <div className="glass-card p-6">
             <h3 className="text-white font-semibold mb-4">Stream Settings</h3>
 
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {/* Cover Photo Section */}
+              <div className="lg:col-span-2">
+                <label className="text-gray-400 text-xs mb-2 block font-medium">Cover Photo</label>
+                <div className="flex gap-2">
+                  <input
+                    className="glass-input flex-1"
+                    value={editThumbnailUrl}
+                    onChange={(e) => setEditThumbnailUrl(e.target.value)}
+                    placeholder="Enter cover photo URL..."
+                    type="url"
+                  />
+                  {editThumbnailUrl && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => setEditThumbnailUrl("")}
+                        className="btn-ghost px-3 text-gray-400 hover:text-white"
+                        title="Clear cover photo"
+                      >
+                        ✕
+                      </button>
+                      {stream?.thumbnailUrl && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditThumbnailUrl("");
+                            // Also clear the actual stream thumbnail
+                            handleSave();
+                          }}
+                          className="btn-ghost px-3 text-red-400 hover:text-red-300"
+                          title="Remove cover photo"
+                        >
+                          🗑
+                        </button>
+                      )}
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Thumbnail Preview - Now in grid */}
+              <div>
+                <label className="text-gray-400 text-xs mb-2 block font-medium">Preview</label>
+                {editThumbnailUrl ? (
+                  <div className="relative aspect-video bg-black/20 rounded-lg overflow-hidden">
+                    <img
+                      src={editThumbnailUrl}
+                      alt="Cover preview"
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        e.target.nextElementSibling.style.display = 'flex';
+                      }}
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center text-gray-500" style={{ display: 'none' }}>
+                      <p className="text-sm">Failed to load image</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="aspect-video bg-black/20 rounded-lg flex items-center justify-center">
+                    <p className="text-gray-600 text-sm">No cover photo</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Stream Title */}
               <div>
                 <label className="text-gray-400 text-xs mb-2 block font-medium">Stream Title</label>
                 <input
@@ -230,6 +308,7 @@ const Dashboard = () => {
                 />
               </div>
 
+              {/* Category */}
               <div>
                 <label className="text-gray-400 text-xs mb-2 block font-medium">Category</label>
                 <select
@@ -245,7 +324,8 @@ const Dashboard = () => {
                 </select>
               </div>
 
-              <div>
+              {/* Stream Key - Full width */}
+              <div className="lg:col-span-2">
                 <label className="text-gray-400 text-xs mb-2 block font-medium">Stream Key</label>
                 <div className="flex gap-2">
                   <input
@@ -264,9 +344,12 @@ const Dashboard = () => {
                 <p className="text-gray-600 text-xs mt-2">Keep this private. Use with OBS or Streamlabs.</p>
               </div>
 
-              <button onClick={handleSave} className="btn-primary w-full" disabled={saving}>
-                {saving ? "Saving..." : "Save Changes"}
-              </button>
+              {/* Save Button - Full width */}
+              <div className="lg:col-span-2">
+                <button onClick={handleSave} className="btn-primary w-full" disabled={saving}>
+                  {saving ? "Saving..." : "Save Changes"}
+                </button>
+              </div>
             </div>
           </div>
 
