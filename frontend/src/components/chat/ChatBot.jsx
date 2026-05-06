@@ -1,14 +1,70 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageCircle, X, Send, Bot, User } from 'lucide-react';
 
-// Complete chat responses moved from backend to frontend
+// Enhanced chat responses with more natural variations
 const chatResponses = {
   // Greetings and Introductions
   greeting: [
-    "Hello! I'm your StreamFlow assistant. I can help with streaming setup, content discovery, account management, technical support, and analytics. What would you like help with?",
-    "Welcome to StreamFlow! Whether you're new to streaming or an experienced broadcaster, I'm here to help. Ask me about streaming, viewing content, or platform features.",
-    "Hi! I'm your StreamFlow expert. I can guide you through setup, equipment recommendations, audience growth, troubleshooting, and content planning. What's your goal today?",
-    "Welcome! I'm here to make your streaming experience better. I can help with quick setup, technical optimization, analytics, content tips, and platform features."
+    "Hello! I'm your StreamFlow assistant. How can I help you today?",
+    "Hi there! I'm here to help with streaming, content discovery, account management, and technical support. What do you need?",
+    "Welcome to StreamFlow! I can assist with streaming setup, audience growth, and platform features. How can I help?",
+    "Hey! I'm your StreamFlow expert. Ready to help with streaming, troubleshooting, or account questions. What's on your mind?",
+    "Hi! I'm doing great, thanks for asking! I'm here to help you with anything StreamFlow related. What can I assist you with?",
+    "Hello! I'm here and ready to help. Whether you need streaming advice or technical support, I've got you covered. What would you like to know?"
+  ],
+
+  // Conversational responses
+  howAreYou: [
+    "I'm doing great, thanks for asking! I'm here to help you with anything StreamFlow related. What can I assist you with?",
+    "I'm functioning perfectly and ready to help! I'm your dedicated StreamFlow assistant. What do you need help with today?",
+    "Thanks for checking in! I'm here to help you succeed on StreamFlow. What can I do for you?",
+    "I'm excellent! Always ready to help with streaming, account questions, or technical issues. What's on your mind?"
+  ],
+
+  farewell: [
+    "Goodbye! Feel free to come back anytime if you need help with StreamFlow. Have a great day!",
+    "See you later! I'm always here if you need streaming advice or technical support. Take care!",
+    "Bye! Don't hesitate to reach out if you need help with your StreamFlow journey. Happy streaming!",
+    "Take care! Remember I'm here 24/7 to help with any StreamFlow questions. See you soon!"
+  ],
+
+  // General system/platform inquiries
+  system: [
+    "StreamFlow is a comprehensive streaming platform that combines powerful broadcasting tools with community features. You can stream high-quality content, engage with your audience through live chat, and grow your channel with our analytics tools. What specific aspect would you like to explore?",
+    "StreamFlow offers professional streaming capabilities with real-time interaction, content discovery, and monetization options. Our platform supports HD streaming, audience analytics, and community building tools. What would you like to know more about?",
+    "StreamFlow is your all-in-one streaming solution! We provide live broadcasting tools, audience engagement features, content discovery algorithms, and comprehensive analytics. Whether you're a creator or viewer, there's something for everyone. What interests you most?"
+  ],
+
+  content: [
+    "StreamFlow offers diverse content across gaming, creative arts, music, education, lifestyle, and entertainment categories. You can discover live streams, recorded content, highlights, and community posts. Our algorithm helps you find content tailored to your interests. What type of content are you looking for?",
+    "On StreamFlow, you'll find everything from gaming streams and creative art sessions to music performances and educational content. Creators share live experiences, while viewers can interact through real-time chat and virtual gifts. What content categories interest you most?",
+    "StreamFlow's content ecosystem includes live broadcasting, video-on-demand, highlight clips, and community posts. Creators can share their passions while building engaged communities. What kind of content would you like to explore or create?"
+  ],
+
+  live: [
+    "Going live on StreamFlow is easy! Just ensure you have a good internet connection (5+ Mbps upload), test your camera and microphone, then click 'Start Streaming' from your dashboard. You can configure quality settings, add a title and tags, and engage with your audience through live chat. Would you like a step-by-step setup guide?",
+    "Live streaming on StreamFlow supports HD quality up to 1080p60fps with real-time chat interaction. You'll need a modern browser, camera/mic permissions, and stable internet. Our platform provides analytics, audience tools, and monetization options. Are you looking to start your first stream or improve your current setup?",
+    "StreamFlow's live streaming feature includes professional broadcasting tools, real-time audience engagement, and performance analytics. You can stream in various quality tiers, use custom overlays, and interact through live chat. What specific aspect of live streaming would you like help with?"
+  ],
+
+  video: [
+    "StreamFlow supports both live streaming and video-on-demand content. You can broadcast live in HD quality, save your streams for later viewing, create highlight clips, and build a content library. Our platform handles video processing, transcoding, and delivery automatically. What type of video content are you interested in?",
+    "Video on StreamFlow includes live broadcasting, recorded streams, highlight reels, and uploaded content. We support various resolutions from 480p to 4K, with adaptive bitrate for optimal viewing. Creators can manage their video library and analyze performance. Would you like to know more about streaming or video management?",
+    "StreamFlow's video capabilities encompass live streaming, VOD hosting, clip creation, and content discovery. Our platform ensures smooth playback across devices with quality optimization. Whether you're creating or watching, we provide tools for the best video experience. What specific video feature interests you?"
+  ],
+
+  online: [
+    "StreamFlow is an online platform accessible 24/7 from anywhere with internet connection. You can stream, watch content, and engage with the community anytime. Our cloud infrastructure ensures reliable service with minimal downtime. Is there something specific you'd like to do online right now?",
+    "Being online with StreamFlow means access to live streams, content discovery, and community features anytime. Our platform works across browsers and devices, with mobile apps for on-the-go access. You can connect with creators and viewers globally. What would you like to do online today?",
+    "StreamFlow's online presence includes live streaming, real-time chat, content browsing, and community interaction. Our platform ensures smooth performance with global CDN coverage. Whether you're streaming or viewing, you're part of our online community. How can I help you get started?"
+  ],
+
+  // Acknowledgment responses
+  good: [
+    "That's great to hear! I'm here to help make your StreamFlow experience even better. What would you like to work on today?",
+    "Awesome! I'm glad things are going well. Is there anything specific about StreamFlow you'd like to explore or improve?",
+    "Fantastic! I'm here to help you continue having a great experience. What StreamFlow features can I assist you with?",
+    "Wonderful! I'm ready to help you with any streaming, account, or technical questions you might have. What's on your mind?"
   ],
 
   // Account Management
@@ -150,12 +206,102 @@ const chatResponses = {
 };
 
 const getChatResponse = (userMessage) => {
-  const message = userMessage.toLowerCase();
+  const message = userMessage.toLowerCase().trim();
 
-  // Greetings and Introductions
-  if (message.includes('hi') || message.includes('hello') || message.includes('hey') || message.includes('greetings') ||
-    message.includes('welcome') || message.includes('good morning') || message.includes('good afternoon') || message.includes('good evening')) {
+  // Enhanced greeting detection with more patterns
+  const greetingPatterns = [
+    'hi', 'hello', 'hey', 'hy', 'greetings', 'welcome',
+    'good morning', 'good afternoon', 'good evening',
+    '^hi ', '^hello ', '^hey ', '^hy '
+  ];
+
+  if (greetingPatterns.some(pattern => {
+    if (pattern.startsWith('^')) {
+      return message.startsWith(pattern.substring(1));
+    }
+    return message.includes(pattern);
+  })) {
     return chatResponses.greeting[Math.floor(Math.random() * chatResponses.greeting.length)];
+  }
+
+  // How are you detection
+  const howAreYouPatterns = [
+    'how are you', 'how are you doing', 'how you doing',
+    'how are things', 'how is it going', 'how is everything'
+  ];
+
+  if (howAreYouPatterns.some(pattern => message.includes(pattern))) {
+    return chatResponses.howAreYou[Math.floor(Math.random() * chatResponses.howAreYou.length)];
+  }
+
+  // Farewell detection
+  const farewellPatterns = [
+    'bye', 'goodbye', 'see you', 'see ya', 'later',
+    'take care', 'farewell', 'cya', 'exit'
+  ];
+
+  if (farewellPatterns.some(pattern => message.includes(pattern))) {
+    return chatResponses.farewell[Math.floor(Math.random() * chatResponses.farewell.length)];
+  }
+
+  // System/platform inquiries
+  const systemPatterns = [
+    'system', 'platform', 'what is streamflow', 'about streamflow',
+    'streamflow platform', 'how does streamflow work'
+  ];
+
+  if (systemPatterns.some(pattern => message.includes(pattern))) {
+    return chatResponses.system[Math.floor(Math.random() * chatResponses.system.length)];
+  }
+
+  // Content inquiries
+  const contentPatterns = [
+    'content', 'what content', 'type of content', 'content available',
+    'what can i watch', 'what can i see', 'content on streamflow'
+  ];
+
+  if (contentPatterns.some(pattern => message.includes(pattern))) {
+    return chatResponses.content[Math.floor(Math.random() * chatResponses.content.length)];
+  }
+
+  // Live streaming
+  const livePatterns = [
+    'live', 'live streaming', 'go live', 'start streaming',
+    'how to stream', 'broadcast live', 'live broadcast'
+  ];
+
+  if (livePatterns.some(pattern => message.includes(pattern))) {
+    return chatResponses.live[Math.floor(Math.random() * chatResponses.live.length)];
+  }
+
+  // Video inquiries
+  const videoPatterns = [
+    'video', 'videos', 'recorded', 'vod', 'video on demand',
+    'watch video', 'video content', 'video quality'
+  ];
+
+  if (videoPatterns.some(pattern => message.includes(pattern))) {
+    return chatResponses.video[Math.floor(Math.random() * chatResponses.video.length)];
+  }
+
+  // Online/availability
+  const onlinePatterns = [
+    'online', 'available', 'access', 'connect', 'internet',
+    'online platform', 'web access'
+  ];
+
+  if (onlinePatterns.some(pattern => message.includes(pattern))) {
+    return chatResponses.online[Math.floor(Math.random() * chatResponses.online.length)];
+  }
+
+  // Positive acknowledgments
+  const goodPatterns = [
+    'good', 'great', 'awesome', 'fantastic', 'excellent',
+    'perfect', 'amazing', 'wonderful'
+  ];
+
+  if (goodPatterns.some(pattern => message.includes(pattern)) && message.length < 10) {
+    return chatResponses.good[Math.floor(Math.random() * chatResponses.good.length)];
   }
 
   // Account Management
@@ -277,8 +423,16 @@ const getChatResponse = (userMessage) => {
     return chatResponses.monetization[Math.floor(Math.random() * chatResponses.monetization.length)];
   }
 
-  // Default response
-  return chatResponses.default[Math.floor(Math.random() * chatResponses.default.length)];
+  // Enhanced fallback with more helpful responses
+  const fallbackResponses = [
+    "I'm here to help! I can assist with streaming setup, account management, technical issues, content discovery, and platform features. What specific area would you like help with?",
+    "I'd be happy to help you! I'm knowledgeable about live streaming, audience growth, monetization, technical troubleshooting, and all StreamFlow features. What can I help you with today?",
+    "I'm your StreamFlow expert! Whether you need help with streaming setup, finding content, managing your account, or technical support, I'm here to assist. What would you like to know?",
+    "Let me help you with StreamFlow! I can guide you through streaming setup, content discovery, account features, technical issues, and much more. What's on your mind?",
+    "I'm here to make your StreamFlow experience better! Ask me anything about streaming, content, accounts, or technical support. How can I assist you today?"
+  ];
+
+  return fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)];
 };
 
 const ChatBot = () => {
@@ -351,11 +505,11 @@ const ChatBot = () => {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-50 glass-card hover:bg-white/10 text-white rounded-full p-4 transition-all duration-300 hover:scale-110 group"
+          className="fixed bottom-6 right-6 z-50 w-16 h-16 bg-gradient-to-br from-gray-800/30 via-gray-700/20 to-gray-600/15 backdrop-blur-xl border border-gray-500/40 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 group shadow-lg shadow-gray-900/20 shadow-white/10 shadow-blue-400/5"
           aria-label="Open chat"
         >
-          <MessageCircle size={24} />
-          <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 glass-card text-white text-sm px-3 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+          <MessageCircle size={24} className="text-white drop-shadow-lg" />
+          <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-gray-800/30 backdrop-blur-xl text-white text-sm px-3 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap border border-gray-500/40 shadow-lg shadow-white/10">
             Chat with us
           </span>
         </button>
@@ -363,11 +517,11 @@ const ChatBot = () => {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-6 right-6 z-50 w-96 h-[500px] glass-card rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-gray-200">
+        <div className="fixed bottom-6 right-6 z-50 w-96 h-[500px] glass-card rounded-2xl flex flex-col overflow-hidden border border-gray-700">
           {/* Header */}
           <div className="glass-card border-b border-gray-700 text-white p-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center">
+              <div className="w-10 h-10 bg-gray-800/30 rounded-full flex items-center justify-center">
                 <Bot size={20} />
               </div>
               <div>
@@ -377,7 +531,7 @@ const ChatBot = () => {
             </div>
             <button
               onClick={() => setIsOpen(false)}
-              className="text-gray-400 hover:text-white transition-colors p-1 hover:bg-white/10 rounded-lg"
+              className="text-gray-400 transition-colors p-1 rounded-lg"
               aria-label="Close chat"
             >
               <X size={20} />
@@ -398,7 +552,7 @@ const ChatBot = () => {
                 )}
                 <div
                   className={`max-w-[70%] rounded-2xl px-4 py-2 ${message.sender === 'user'
-                    ? 'bg-white text-black'
+                    ? 'glass-card border border-gray-700 text-white'
                     : 'glass-card border border-gray-700 text-white'
                     }`}
                 >
