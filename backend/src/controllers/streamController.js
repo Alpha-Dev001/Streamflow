@@ -30,8 +30,8 @@ const getLiveStreams = async (req, res) => {
     if (category) filter.category = category;
 
     const streams = await Stream.find(filter)
-      .sort({ viewerCount: -1 }) // most viewers first
-      .select("-streamKey"); // NEVER send stream key to public
+      .sort({ viewerCount: -1 })
+      .select("-streamKey"); 
 
     res.json({ streams });
   } catch (error) {
@@ -39,8 +39,6 @@ const getLiveStreams = async (req, res) => {
   }
 };
 
-// ─── GET ALL STREAMS (Discover page) ─────────────────────────
-// GET /api/streams
 const getAllStreams = async (req, res) => {
   try {
     const { category } = req.query;
@@ -58,8 +56,7 @@ const getAllStreams = async (req, res) => {
   }
 };
 
-// ─── GET SINGLE STREAM BY ID ──────────────────────────────────
-// GET /api/streams/:id
+
 const getStreamById = async (req, res) => {
   try {
     const stream = await Stream.findById(req.params.id).select("-streamKey");
@@ -74,8 +71,7 @@ const getStreamById = async (req, res) => {
   }
 };
 
-// ─── UPDATE STREAM ────────────────────────────────────────────
-// PATCH /api/streams/me
+
 const updateStream = async (req, res) => {
   try {
     const { title, category, thumbnailUrl } = req.body;
@@ -99,8 +95,7 @@ const updateStream = async (req, res) => {
   }
 };
 
-// ─── REGENERATE STREAM KEY ────────────────────────────────────
-// POST /api/streams/me/regenerate-key
+
 const regenerateKey = async (req, res) => {
   try {
     const stream = await Stream.findOne({ user: req.user._id });
@@ -122,8 +117,7 @@ const regenerateKey = async (req, res) => {
   }
 };
 
-// ─── GET STREAM CHAT MESSAGES ─────────────────────────────────
-// GET /api/streams/:id/messages
+
 const getMessages = async (req, res) => {
   try {
     const messages = await Message.find({ stream: req.params.id })

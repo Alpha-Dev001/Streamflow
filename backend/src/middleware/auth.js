@@ -1,10 +1,9 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
-// Middleware that checks if the user is logged in
 const protect = async (req, res, next) => {
   try {
-    // 1. Check if Authorization header exists and has a Bearer token
+
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {

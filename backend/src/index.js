@@ -6,6 +6,7 @@ const cors = require("cors");
 const connectDB = require("./config/database");
 const authRoutes = require("./routes/authRoutes");
 const streamRoutes = require("./routes/streamRoutes");
+const chatRoutes = require("./routes/chatRoutes");
 const setupSocket = require("./socket/socketHandler");
 
 connectDB();

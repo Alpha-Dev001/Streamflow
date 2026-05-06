@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { SocketProvider } from "./context/SocketContext";
 import Sidebar from "./components/layout/Sidebar";
+import ChatBot from "./components/chat/ChatBot";
 import Landing from "./pages/Landing";
 import Home from "./pages/Home";
 import Discover from "./pages/Discover";
@@ -61,6 +62,7 @@ const AppRoutes = () => {
 
         <Route path="*" element={<NotFound />} />
       </Routes>
+      <ChatBot />
     </SocketProvider>
   );
 };
