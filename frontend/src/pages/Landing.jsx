@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Play, Users, Shield, Zap, ArrowRight, CheckCircle, BarChart3, Globe, Clock, Star, Monitor, Settings, TrendingUp, MessageSquare, Facebook, Twitter, Linkedin, Instagram, Mail, Phone, MapPin } from "lucide-react";
+import { Play, Users, Shield, Zap, ArrowRight, CheckCircle, BarChart3, Globe, Clock, Star, Monitor, Settings, TrendingUp, MessageSquare, Facebook, Twitter, Linkedin, Instagram, Mail, Phone, MapPin, Calendar } from "lucide-react";
 
 const Landing = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -238,14 +238,25 @@ const Landing = () => {
             No complexity. No compromises. Just pure performance.
           </p>
 
-          {/* Single CTA */}
-          <Link
-            to="/register"
-            className="inline-flex items-center gap-2 bg-white/80 text-black px-8 py-4 rounded-full text-lg font-medium hover:bg-white/90 transition-colors"
-          >
-            Start streaming free
-            <ArrowRight className="w-5 h-5" />
-          </Link>
+          {/* Dual CTAs */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link
+              to="/register"
+              className="inline-flex items-center gap-2 bg-white/80 text-black px-8 py-4 rounded-full text-lg font-medium hover:bg-white/90 transition-colors"
+            >
+              Start streaming free
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+            <a
+              href="https://cal.com/munezero-alpha-d427mt/30min?overlayCalendar=true"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-white/10 text-white px-8 py-4 rounded-full text-lg font-medium hover:bg-white/20 transition-colors border border-white/20"
+            >
+              Book a demo
+              <Calendar className="w-5 h-5" />
+            </a>
+          </div>
 
           {/* Subtle Trust Indicators */}
           <div className="mt-16 flex items-center justify-center gap-12 text-white/40 text-sm">
@@ -387,13 +398,25 @@ const Landing = () => {
           <p className="text-xl text-white/60 mb-12 leading-relaxed">
             Join thousands of creators using StreamFlow.
           </p>
-          <Link
-            to="/register"
-            className="inline-flex items-center gap-2 bg-white text-black px-8 py-4 rounded-full text-lg font-medium hover:bg-white/90 transition-all duration-300"
-          >
-            Start free trial
-            <ArrowRight className="w-5 h-5" />
-          </Link>
+          {/* Dual CTAs */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link
+              to="/register"
+              className="inline-flex items-center gap-2 bg-white text-black px-8 py-4 rounded-full text-lg font-medium hover:bg-white/90 transition-all duration-300"
+            >
+              Start free trial
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+            <a
+              href="https://cal.com/munezero-alpha-d427mt/30min?overlayCalendar=true"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-white/10 text-white px-8 py-4 rounded-full text-lg font-medium hover:bg-white/20 transition-all duration-300 border border-white/20"
+            >
+              Book a demo
+              <Calendar className="w-5 h-5" />
+            </a>
+          </div>
         </div>
       </section>
 
