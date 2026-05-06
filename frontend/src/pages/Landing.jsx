@@ -366,10 +366,8 @@ const Landing = () => {
                 {[...testimonials, ...testimonials].map((testimonial, index) => (
                   <div
                     key={`${testimonial.name}-${index}`}
-                    className="bg-white/5 rounded-2xl p-12 border border-white/10 min-w-[450px] max-w-[450px] hover:bg-white/10 transition-all duration-300 flex-shrink-0 relative"
+                    className="bg-black/20 backdrop-blur-xl rounded-2xl p-12 border border-white/20 min-w-[450px] max-w-[450px] flex-shrink-0 relative"
                   >
-                    {/* Edge glow effects */}
-                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 transition-opacity duration-300" />
                     <div className="flex mb-6">
                       {[...Array(testimonial.rating)].map((_, i) => (
                         <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
