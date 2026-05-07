@@ -31,7 +31,7 @@ const getLiveStreams = async (req, res) => {
 
     const streams = await Stream.find(filter)
       .sort({ viewerCount: -1 })
-      .select("-streamKey"); 
+      .select("-streamKey");
 
     res.json({ streams });
   } catch (error) {
@@ -48,6 +48,26 @@ const getAllStreams = async (req, res) => {
 
     const streams = await Stream.find(filter)
       .sort({ isLive: -1, viewerCount: -1 })
+      .select("-streamKey");
+
+    res.json({ streams });
+  } catch (error) {
+    res.status(500).json({ message: "Server error." });
+  }
+};
+
+// ─── GET RECENT STREAMS ───────────────────────────────────────
+// GET /api/streams/recent
+const getRecentStreams = async (req, res) => {
+  try {
+    const { category } = req.query;
+
+    const filter = {};
+    if (category) filter.category = category;
+
+    const streams = await Stream.find(filter)
+      .sort({ createdAt: -1 })
+      .limit(20)
       .select("-streamKey");
 
     res.json({ streams });
@@ -134,6 +154,7 @@ module.exports = {
   getMyStream,
   getLiveStreams,
   getAllStreams,
+  getRecentStreams,
   getStreamById,
   updateStream,
   regenerateKey,

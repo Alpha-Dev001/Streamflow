@@ -39,6 +39,7 @@ export const authAPI = {
 export const streamsAPI = {
   getAll: (category) => request("GET", `/api/streams${category ? `?category=${category}` : ""}`),
   getLive: (category) => request("GET", `/api/streams/live${category ? `?category=${category}` : ""}`),
+  getRecent: (category) => request("GET", `/api/streams/recent${category ? `?category=${category}` : ""}`),
   getById: (id) => request("GET", `/api/streams/${id}`),
   getMyStream: () => request("GET", "/api/streams/user/me"),
   updateMyStream: (body) => request("PATCH", "/api/streams/user/me", body),

@@ -1,23 +1,42 @@
 import { useState, useEffect } from "react";
-import { Compass, Search, Filter } from "lucide-react";
+import { Compass, Search, Filter, Clock, TrendingUp, Users } from "lucide-react";
 import { streamsAPI } from "../utils/api";
 import StreamCard from "../components/stream/StreamCard";
 import LoadingSkeleton from "../components/ui/LoadingSkeleton";
 
 const CATEGORIES = ["all", "gaming", "music", "tech", "sports", "creative", "education", "chat", "other"];
+const SORT_OPTIONS = [
+  { value: "recent", label: "Recent", icon: Clock },
+  { value: "popular", label: "Popular", icon: TrendingUp },
+  { value: "live", label: "Live", icon: Users },
+];
 
 const Discover = () => {
   const [streams, setStreams] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState("all");
+  const [sortBy, setSortBy] = useState("recent");
 
   useEffect(() => {
     const fetchStreams = async () => {
       setLoading(true);
       try {
-        const data = await streamsAPI.getAll(
-          activeCategory !== "all" ? activeCategory : null
-        );
+        let data;
+        const category = activeCategory !== "all" ? activeCategory : null;
+
+        switch (sortBy) {
+          case "recent":
+            data = await streamsAPI.getRecent(category);
+            break;
+          case "live":
+            data = await streamsAPI.getLive(category);
+            break;
+          case "popular":
+          default:
+            data = await streamsAPI.getAll(category);
+            break;
+        }
+
         setStreams(data.streams);
       } catch (err) {
         console.error("Failed to fetch streams:", err);
@@ -27,7 +46,7 @@ const Discover = () => {
     };
 
     fetchStreams();
-  }, [activeCategory]);
+  }, [activeCategory, sortBy]);
 
   return (
     <div className="flex gap-6 p-8 fade-in" style={{ height: 'calc(100vh - 64px)' }}>
@@ -39,9 +58,35 @@ const Discover = () => {
             <Compass size={16} className="text-gray-400" />
             <span className="text-gray-400 text-xs uppercase tracking-widest">Browse</span>
           </div>
-          <h1 className="text-white text-2xl font-semibold">
-            {activeCategory === "all" ? "Discover" : `${activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)} Streams`}
-          </h1>
+          <div className="flex items-center justify-between">
+            <h1 className="text-white text-2xl font-semibold">
+              {activeCategory === "all" ? "Discover" : `${activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)} Streams`}
+            </h1>
+
+            {/* Sort Options */}
+            <div className="flex items-center gap-2">
+              <span className="text-gray-400 text-xs uppercase tracking-widest mr-2">Sort by</span>
+              <div className="flex gap-1">
+                {SORT_OPTIONS.map((option) => {
+                  const Icon = option.icon;
+                  return (
+                    <button
+                      key={option.value}
+                      onClick={() => setSortBy(option.value)}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${sortBy === option.value
+                        ? "bg-white text-black"
+                        : "text-gray-400 hover:text-white hover:bg-white/5"
+                        }`}
+                      style={sortBy !== option.value ? { border: "1px solid rgba(255,255,255,0.08)" } : {}}
+                    >
+                      <Icon size={14} />
+                      {option.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Scrollable Content */}
@@ -56,10 +101,12 @@ const Discover = () => {
             <div className="glass-card p-16 text-center">
               <Search size={48} className="text-gray-600 mx-auto mb-4" />
               <p className="text-white font-medium mb-2">
-                {activeCategory === "all" ? "No streams found" : `No ${activeCategory} streams found`}
+                {activeCategory === "all"
+                  ? `No ${sortBy} streams found`
+                  : `No ${sortBy} ${activeCategory} streams found`}
               </p>
               <p className="text-gray-500 text-sm">
-                {activeCategory === "all" ? "Try a different category" : "Try a different category"}
+                Try a different category or sort option
               </p>
             </div>
           ) : (

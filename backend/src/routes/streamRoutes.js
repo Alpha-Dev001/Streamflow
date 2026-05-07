@@ -4,6 +4,7 @@ const {
   getMyStream,
   getLiveStreams,
   getAllStreams,
+  getRecentStreams,
   getStreamById,
   updateStream,
   regenerateKey,
@@ -14,6 +15,7 @@ const { protect } = require("../middleware/auth");
 // Public routes
 router.get("/", getAllStreams);
 router.get("/live", getLiveStreams);
+router.get("/recent", getRecentStreams);
 router.get("/:id", getStreamById);
 router.get("/:id/messages", getMessages);
 
