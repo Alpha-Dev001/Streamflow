@@ -16,42 +16,34 @@ const Home = () => {
   const { error: showError } = useToast();
 
   useEffect(() => {
-    const fetchTopStreams = async () => {
+    const fetchData = async () => {
+      setLoading(true);
       try {
-        const response = await fetch('/api/streams');
-        const data = await response.json();
-
+        // Fetch top streams (all streams sorted by popularity)
+        const topStreamsData = await streamsAPI.getAll();
         // Sort by totalViews and get top 3
-        const sortedStreams = data.streams
-          .sort((a, b) => b.totalViews - a.totalViews)
+        const sortedStreams = topStreamsData.streams
+          .sort((a, b) => (b.totalViews || 0) - (a.totalViews || 0))
           .slice(0, 3);
-
         setTopStreams(sortedStreams);
+
+        // Fetch recent streams
+        const recentStreamsData = await streamsAPI.getRecent();
+        setRecentStreams(recentStreamsData.streams.slice(0, 3)); // Show 3 recent streams
       } catch (error) {
-        showError('Failed to fetch top streams');
+        showError(error.message || 'Failed to fetch streams');
       } finally {
         setLoading(false);
       }
     };
 
-    const fetchRecentStreams = async () => {
-      try {
-        const response = await fetch('/api/streams/recent');
-        const data = await response.json();
-        setRecentStreams(data.streams.slice(0, 3)); // Show 3 recent streams
-      } catch (error) {
-        showError('Failed to fetch recent streams');
-      }
-    };
-
-    fetchTopStreams();
-    fetchRecentStreams();
+    fetchData();
 
     const timer = setTimeout(() => {
       setIsLoaded(true);
     }, 100);
     return () => clearTimeout(timer);
-  }, []);
+  }, [showError]);
 
 
   return (
