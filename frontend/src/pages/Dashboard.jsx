@@ -14,8 +14,6 @@ const Dashboard = () => {
   const [isLive, setIsLive] = useState(false);
   const [viewerCount, setViewerCount] = useState(0);
   const [isScreenSharing, setIsScreenSharing] = useState(false);
-  const [thumbnailUrl, setThumbnailUrl] = useState("");
-  const [savingThumbnail, setSavingThumbnail] = useState(false);
 
   const videoRef = useRef(null);
   const socket = useSocket();
@@ -47,16 +45,9 @@ const Dashboard = () => {
 
   const handleGoLive = async () => {
     try {
-      // Check if stream has thumbnail URL
-      if (stream?.thumbnailUrl) {
-        showSuccess("Stream started successfully!");
-      } else {
-        showSuccess("Please add a thumbnail in settings to start streaming");
-        return; // Don't start stream without thumbnail
-      }
-
       await startBroadcast();
       setIsLive(true);
+      showSuccess("Stream started successfully!");
     } catch (err) {
       showError(err.message || "Failed to start stream");
     }
@@ -122,24 +113,14 @@ const Dashboard = () => {
               {!isLive && (
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="text-center">
-                    {stream?.thumbnailUrl ? (
-                      <img
-                        src={stream.thumbnailUrl}
-                        alt="Stream thumbnail"
-                        className="w-full h-full object-cover rounded-lg"
-                      />
+                    {isScreenSharing ? (
+                      <Monitor size={48} className="text-gray-600 mx-auto mb-2" />
                     ) : (
-                      <>
-                        {isScreenSharing ? (
-                          <Monitor size={48} className="text-gray-600 mx-auto mb-2" />
-                        ) : (
-                          <Video size={48} className="text-gray-600 mx-auto mb-2" />
-                        )}
-                        <p className="text-gray-500 text-sm">
-                          {isScreenSharing ? "Screen preview will appear here" : "Camera preview will appear here"}
-                        </p>
-                      </>
+                      <Video size={48} className="text-gray-600 mx-auto mb-2" />
                     )}
+                    <p className="text-gray-500 text-sm">
+                      {isScreenSharing ? "Screen preview will appear here" : "Camera preview will appear here"}
+                    </p>
                   </div>
                 </div>
               )}
