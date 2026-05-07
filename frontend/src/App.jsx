@@ -16,6 +16,7 @@ import ChatAI from "./pages/ChatAI";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
+
 const ProtectedRoute = ({ children }) => {
   const { isLoggedIn, loading } = useAuth();
 
