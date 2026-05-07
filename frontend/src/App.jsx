@@ -10,6 +10,8 @@ import Dashboard from "./pages/Dashboard";
 import Watch from "./pages/Watch";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ChatAI from "./pages/ChatAI";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const ProtectedRoute = ({ children }) => {
@@ -43,14 +45,51 @@ const AppRoutes = () => {
         <Route path="/register" element={<Register />} />
 
         {/* App Pages - Protected */}
-        <Route path="/watch/:id" element={<Watch />} />
-        <Route path="/app" element={<MainLayout><Home /></MainLayout>} />
-        <Route path="/app/discover" element={<MainLayout><Discover /></MainLayout>} />
+        <Route
+          path="/watch/:id"
+          element={
+            <ProtectedRoute>
+              <Watch />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/app"
+          element={
+            <ProtectedRoute>
+              <MainLayout><Home /></MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/app/discover"
+          element={
+            <ProtectedRoute>
+              <MainLayout><Discover /></MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/app/chat-ai"
+          element={
+            <ProtectedRoute>
+              <MainLayout><ChatAI /></MainLayout>
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/app/dashboard"
           element={
             <ProtectedRoute>
               <MainLayout><Dashboard /></MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/app/settings"
+          element={
+            <ProtectedRoute>
+              <MainLayout><Settings /></MainLayout>
             </ProtectedRoute>
           }
         />

@@ -1,111 +1,101 @@
 import { useState, useEffect } from "react";
-import { Radio, Satellite, Filter } from "lucide-react";
-import { streamsAPI } from "../utils/api";
-import StreamCard from "../components/stream/StreamCard";
-import LoadingSkeleton from "../components/ui/LoadingSkeleton";
-
-const CATEGORIES = ["all", "gaming", "music", "tech", "sports", "creative", "education", "chat", "other"];
+import { Link } from "react-router-dom";
+import { Play, BarChart3, Users, MessageSquare, Settings, ArrowRight } from "lucide-react";
 
 const Home = () => {
-  const [streams, setStreams] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [activeCategory, setActiveCategory] = useState("all");
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    const fetchStreams = async () => {
-      setLoading(true);
-      try {
-        const data = activeCategory === "all"
-          ? await streamsAPI.getLive()
-          : await streamsAPI.getAll(activeCategory);
-        setStreams(data.streams);
-      } catch (err) {
-        console.error("Failed to fetch streams:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+    const timer = setTimeout(() => {
+      setIsLoaded(true);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
 
-    fetchStreams();
-
-    const interval = setInterval(fetchStreams, 30000);
-    return () => clearInterval(interval);
-  }, [activeCategory]);
+  const quickActions = [
+    {
+      icon: Play,
+      title: "Go Live",
+      description: "Start streaming instantly",
+      link: "/app/dashboard"
+    },
+    {
+      icon: BarChart3,
+      title: "Analytics",
+      description: "View your performance",
+      link: "/app/dashboard"
+    },
+    {
+      icon: Settings,
+      title: "Stream Settings",
+      description: "Configure your stream",
+      link: "/app/settings"
+    },
+    {
+      icon: Users,
+      title: "Discover",
+      description: "Find other streamers",
+      link: "/app/discover"
+    },
+    {
+      icon: MessageSquare,
+      title: "Chat AI",
+      description: "AI-powered assistance",
+      link: "/app/chat-ai"
+    }
+  ];
 
   return (
-    <div className="flex gap-6 p-8 fade-in" style={{ height: 'calc(100vh - 64px)' }}>
-      {/* Main Content */}
-      <main className="flex-1 flex flex-col" style={{ height: 'calc(100vh - 64px)' }}>
-        {/* Fixed Header */}
-        <div className="flex-shrink-0 mb-8 slide-up">
-          <div className="flex items-center gap-2 mb-1">
-            <Radio size={16} className="text-red-500" />
-            <span className="text-red-500 text-xs font-medium uppercase tracking-widest">Live Now</span>
-          </div>
-          <h1 className="text-white text-2xl font-semibold">
-            {activeCategory === "all" ? "Live Streams" : `${activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)} Streams`}
+    <div className="p-8 min-h-screen">
+      <div className={`max-w-4xl mx-auto transition-all duration-1000 ease-out ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+
+        {/* Welcome Header */}
+        <div className="mb-16">
+          <h1 className="text-5xl font-thin text-white mb-4">
+            Welcome back.
           </h1>
-          <p className="text-gray-500 text-sm mt-1">
-            {loading ? "Loading..." : `${streams.length} stream${streams.length !== 1 ? "s" : ""} live right now`}
+          <p className="text-white/60 text-lg">
+            Ready to stream today?
           </p>
         </div>
 
-        {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto">
-          {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4" style={{ overflow: 'hidden' }}>
-              {[...Array(6)].map((_, i) => (
-                <LoadingSkeleton key={i} variant="stream" />
-              ))}
-            </div>
-          ) : streams.length === 0 ? (
-            <div className="glass-card p-16 text-center">
-              <Satellite size={48} className="text-gray-600 mx-auto mb-4" />
-              <p className="text-white font-medium mb-2">
-                {activeCategory === "all" ? "No streams live right now" : `No ${activeCategory} streams live right now`}
-              </p>
-              <p className="text-gray-500 text-sm">
-                {activeCategory === "all" ? "Be the first to go live from your dashboard!" : "Try a different category or be the first to stream in this category!"}
-              </p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 pb-8">
-              {streams.map((stream) => (
-                <div key={stream._id} className="stagger-fade-in">
-                  <StreamCard stream={stream} />
+        {/* Quick Actions Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
+          {quickActions.map((action, index) => (
+            <Link
+              key={action.title}
+              to={action.link}
+              className={`group glass-card p-8 rounded-2xl border border-white/10 hover:border-white/20 transition-all duration-300`}
+              style={{ animationDelay: `${index * 100}ms` }}
+            >
+              <div className="flex items-start gap-6">
+                <div className="w-16 h-16 bg-white/10 rounded-xl flex items-center justify-center group-hover:bg-white/20 transition-colors">
+                  <action.icon className="w-8 h-8 text-white" />
                 </div>
-              ))}
-            </div>
-          )}
+                <div className="flex-1">
+                  <h3 className="text-xl font-medium text-white mb-2">{action.title}</h3>
+                  <p className="text-white/60 text-sm mb-4">{action.description}</p>
+                  <div className="flex items-center text-white/60 text-sm font-medium group-hover:text-white transition-colors">
+                    <span>Open</span>
+                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </div>
+              </div>
+            </Link>
+          ))}
         </div>
-      </main>
 
-      {/* Category Sidebar - Fixed */}
-      <aside className="w-64 flex-shrink-0 overflow-hidden slide-up">
-        <div className="glass-card p-6 h-full">
-          <div className="flex items-center gap-2 mb-4">
-            <Filter size={16} className="text-gray-400" />
-            <span className="text-gray-400 text-xs uppercase tracking-widest">Categories</span>
-          </div>
-          <h3 className="text-white font-semibold mb-4">Filter by Category</h3>
-
-          <div className="space-y-2">
-            {CATEGORIES.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium capitalize transition-all duration-200 ${activeCategory === cat
-                  ? "bg-white text-black"
-                  : "text-gray-400 hover:text-white hover:bg-white/5"
-                  }`}
-                style={activeCategory !== cat ? { border: "1px solid rgba(255,255,255,0.08)" } : {}}
-              >
-                {cat === "all" ? "All Streams" : cat}
-              </button>
-            ))}
-          </div>
+        {/* Bottom CTA */}
+        <div className="text-center">
+          <Link
+            to="/app/dashboard"
+            className="inline-flex items-center gap-3 bg-white text-black px-8 py-4 rounded-full text-base font-medium hover:bg-white/90 transition-all duration-300"
+          >
+            Start Streaming
+            <ArrowRight className="w-5 h-5" />
+          </Link>
         </div>
-      </aside>
+      </div>
     </div>
   );
 };

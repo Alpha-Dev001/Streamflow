@@ -35,6 +35,21 @@ const setupSocket = (io) => {
       latency: 0
     });
 
+    // Set user online
+    if (socket.user) {
+      User.findByIdAndUpdate(socket.user._id, {
+        isOnline: true,
+        lastSeen: new Date(),
+      }).catch(err => console.error("Error setting user online:", err));
+
+      // Broadcast online status to all connected clients
+      socket.broadcast.emit("user-status-changed", {
+        userId: socket.user._id,
+        isOnline: true,
+        lastSeen: new Date(),
+      });
+    }
+
     socket.on("join-stream", async ({ streamId, role }) => {
       socket.join(streamId);
       socket.streamId = streamId;
@@ -136,6 +151,21 @@ const setupSocket = (io) => {
     socket.on("disconnect", async () => {
       console.log(`🔌 Socket disconnected: ${socket.id}`);
       connectionMetrics.delete(socket.id);
+
+      // Set user offline
+      if (socket.user) {
+        User.findByIdAndUpdate(socket.user._id, {
+          isOnline: false,
+          lastSeen: new Date(),
+        }).catch(err => console.error("Error setting user offline:", err));
+
+        // Broadcast offline status to all connected clients
+        socket.broadcast.emit("user-status-changed", {
+          userId: socket.user._id,
+          isOnline: false,
+          lastSeen: new Date(),
+        });
+      }
 
       const { streamId, role } = socket;
       if (!streamId) return;

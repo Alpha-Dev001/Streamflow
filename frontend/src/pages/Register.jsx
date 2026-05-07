@@ -25,7 +25,7 @@ const Register = () => {
     try {
       const data = await authAPI.register(form);
       login(data.token, data.user);
-      navigate("/app/dashboard");
+      navigate("/app");
     } catch (err) {
       setError(err.message);
     } finally {

@@ -199,25 +199,32 @@ const Landing = () => {
 
       {/* Hero Section - Apple/MacBook Style */}
       <section className="relative min-h-screen flex items-center justify-center bg-black">
-        {/* Minimal Navigation */}
-        <nav className={`fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-xl border-b border-white/10 transition-all duration-1000 ease-out ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'
+{/* Modern Rounded Navigation */}
+        <nav className={`fixed top-6 left-1/2 transform -translate-x-1/2 w-[70%] max-w-4xl z-50 bg-black/60 backdrop-blur-lg border border-white/10 rounded-2xl shadow-xl shadow-black/50 transition-all duration-1000 ease-out ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'
           }`}>
-          <div className="max-w-6xl mx-auto px-6 py-6 flex items-center justify-between">
+          <div className="px-8 py-4 flex items-center justify-between">
+            {/* Logo */}
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-black rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-black rounded-xl flex items-center justify-center">
                 <img
                   src="/logo.svg"
                   alt="StreamFlow"
-                  className="w-10 h-10 object-contain"
+                  className="w-6 h-6 object-contain"
                 />
               </div>
               <span className="text-white font-semibold text-lg">StreamFlow</span>
             </div>
-            <div className="flex items-center gap-8">
-              <a href="#how-it-works" className="text-white/70 hover:text-white transition-colors text-sm">How it works</a>
-              <a href="#testimonials" className="text-white/70 hover:text-white transition-colors text-sm">Testimonials</a>
-              <Link to="/login" className="text-white/70 hover:text-white transition-colors text-sm">Sign In</Link>
-              <Link to="/register" className="bg-white/60 text-black px-6 py-2 rounded-full text-sm font-medium hover:bg-white/70 transition-colors">
+
+            {/* Navigation Links */}
+            <div className="hidden md:flex items-center gap-8">
+              <a href="#how-it-works" className="text-white/80 hover:text-white transition-colors text-sm font-medium">How it works</a>
+              <a href="#testimonials" className="text-white/80 hover:text-white transition-colors text-sm font-medium">Testimonials</a>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex items-center gap-3">
+              <Link to="/login" className="text-white/80 hover:text-white transition-colors text-sm font-medium px-4 py-2 hover:bg-white/10 rounded-xl">Sign In</Link>
+              <Link to="/register" className="bg-white text-black px-6 py-2 rounded-xl text-sm font-medium hover:bg-white/90 transition-all hover:scale-105">
                 Start Free
               </Link>
             </div>

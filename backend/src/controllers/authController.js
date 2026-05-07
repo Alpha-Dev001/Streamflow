@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const mongoose = require("mongoose");
 const User = require("../models/User");
 const Stream = require("../models/Stream");
 
@@ -16,7 +17,6 @@ const register = async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
-
     if (!username || !email || !password) {
       return res.status(400).json({ message: "Please provide username, email, and password." });
     }
@@ -27,9 +27,7 @@ const register = async (req, res) => {
     const usernameExists = await User.findOne({ username });
     if (usernameExists) return res.status(400).json({ message: "Username already taken." });
 
-
     const user = await User.create({ username, email, password });
-
 
     await Stream.create({
       user: user._id,
@@ -50,7 +48,6 @@ const register = async (req, res) => {
       },
     });
   } catch (error) {
-
     if (error.name === "ValidationError") {
       const messages = Object.values(error.errors).map((e) => e.message);
       return res.status(400).json({ message: messages[0] });
@@ -69,14 +66,12 @@ const login = async (req, res) => {
       return res.status(400).json({ message: "Please provide email and password." });
     }
 
-
     const user = await User.findOne({ email }).select("+password");
 
     if (!user) {
       return res.status(401).json({ message: "Invalid email or password." });
     }
 
- 
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid email or password." });
@@ -104,7 +99,6 @@ const login = async (req, res) => {
 
 const getMe = async (req, res) => {
   try {
-
     res.json({
       user: {
         id: req.user._id,

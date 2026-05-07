@@ -1,11 +1,13 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { Home, Compass, Radio, User, LogOut, Tv } from "lucide-react";
+import { Home, Compass, Radio, User, LogOut, Tv, Bot, Settings } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 
 const navItems = [
   { to: "/app", icon: Home, label: "Home" },
   { to: "/app/discover", icon: Compass, label: "Discover" },
   { to: "/app/dashboard", icon: Radio, label: "My Stream" },
+  { to: "/app/chat-ai", icon: Bot, label: "Chat with AI" },
+  { to: "/app/settings", icon: Settings, label: "Settings" },
 ];
 
 const Sidebar = () => {
