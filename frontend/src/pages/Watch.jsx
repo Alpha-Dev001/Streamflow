@@ -74,9 +74,9 @@ const Watch = () => {
         <div className="p-4 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
           <LoadingSkeleton variant="text" lines={1} className="w-32 h-6" />
         </div>
-        <div className="flex-1 flex gap-0 overflow-hidden" style={{ height: "calc(100vh - 60px)" }}>
-          <div className="flex-1 flex flex-col">
-            <div className="relative bg-black flex-1">
+        <div className="flex gap-0 overflow-hidden" style={{ height: "calc(100vh - 60px)" }}>
+          <div className="w-[70vw] flex flex-col">
+            <div className="relative bg-black flex-1 glass-card rounded-lg overflow-hidden m-4" style={{ height: "60vh", margin: "20px" }}>
               <LoadingSkeleton className="w-full h-full" />
             </div>
             <div className="p-4 border-t" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
@@ -91,7 +91,7 @@ const Watch = () => {
               </div>
             </div>
           </div>
-          <div className="w-96 flex-shrink-0 border-l" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+          <div className="w-96 flex-shrink-0 border-l" style={{ borderColor: "rgba(255,255,255,0.06)", height: "calc(100vh - 60px)" }}>
             <LoadingSkeleton className="h-full p-4" />
           </div>
         </div>
@@ -125,9 +125,9 @@ const Watch = () => {
         <h2 className="text-white font-semibold flex-1 ml-4 truncate">{stream.title}</h2>
       </div>
 
-      <div className="flex-1 flex gap-0 overflow-hidden" style={{ height: "calc(100vh - 60px)" }}>
-        <div className="flex-1 flex flex-col">
-          <div className="relative bg-black flex-1">
+      <div className="flex gap-0 overflow-hidden" style={{ height: "calc(100vh - 55px)" }}>
+        <div className="w-[70vw] flex flex-col">
+          <div className="relative bg-black flex-1 glass-card rounded-lg overflow-hidden m-4" style={{ height: "60vh", margin: "20px" }}>
             <video
               ref={videoRef}
               autoPlay
@@ -190,7 +190,7 @@ const Watch = () => {
           </div>
         </div>
 
-        <div className="w-96 flex-shrink-0 border-l" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+        <div className="w-[30vw] flex-shrink-0 border-l m-4" style={{ borderColor: "rgba(255,255,255,0.06)", height: "80vh" }}>
           <Chat streamId={id} />
         </div>
       </div>

@@ -56,6 +56,11 @@ const streamSchema = new mongoose.Schema(
       default: null,
     },
 
+    coverPageUrl: {
+      type: String,
+      default: null,
+    },
+
     // When the current live session started
     startedAt: {
       type: Date,

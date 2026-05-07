@@ -21,15 +21,20 @@ const Home = () => {
       try {
         // Fetch top streams (all streams sorted by popularity)
         const topStreamsData = await streamsAPI.getAll();
-        // Sort by totalViews and get top 3
+        // Sort by totalViews and get top 3, excluding user's own stream
         const sortedStreams = topStreamsData.streams
+          .filter(stream => stream.user._id !== user?.id)
           .sort((a, b) => (b.totalViews || 0) - (a.totalViews || 0))
           .slice(0, 3);
         setTopStreams(sortedStreams);
 
         // Fetch recent streams
         const recentStreamsData = await streamsAPI.getRecent();
-        setRecentStreams(recentStreamsData.streams.slice(0, 3)); // Show 3 recent streams
+        // Filter out user's own stream and show 3 recent streams
+        const filteredRecentStreams = recentStreamsData.streams
+          .filter(stream => stream.user._id !== user?.id)
+          .slice(0, 3);
+        setRecentStreams(filteredRecentStreams);
       } catch (error) {
         showError(error.message || 'Failed to fetch streams');
       } finally {

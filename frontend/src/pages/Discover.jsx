@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Compass, Search, Filter, Clock, TrendingUp, Users } from "lucide-react";
 import { streamsAPI } from "../utils/api";
 import { useToast } from "../context/ToastContext";
+import { useAuth } from "../context/AuthContext";
 import StreamCard from "../components/stream/StreamCard";
 import LoadingSkeleton from "../components/ui/LoadingSkeleton";
 
@@ -17,6 +18,7 @@ const Discover = () => {
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState("all");
   const [sortBy, setSortBy] = useState("recent");
+  const { user } = useAuth();
   const { error: showError } = useToast();
 
   useEffect(() => {
@@ -39,7 +41,9 @@ const Discover = () => {
             break;
         }
 
-        setStreams(data.streams);
+        // Filter out user's own stream
+        const filteredStreams = data.streams.filter(stream => stream.user._id !== user?.id);
+        setStreams(filteredStreams);
       } catch (err) {
         showError(err.message || "Failed to fetch streams");
       } finally {
@@ -48,7 +52,7 @@ const Discover = () => {
     };
 
     fetchStreams();
-  }, [activeCategory, sortBy, showError]);
+  }, [activeCategory, sortBy, showError, user]);
 
   return (
     <div className="flex gap-6 p-8 fade-in" style={{ height: 'calc(100vh - 64px)' }}>

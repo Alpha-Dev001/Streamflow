@@ -116,21 +116,43 @@ const getMe = async (req, res) => {
 
 const updateMe = async (req, res) => {
   try {
-    const { username, bio, avatar } = req.body;
+    const { username, email, password, bio, avatar } = req.body;
 
-
+    // Check if username is already taken
     if (username && username !== req.user.username) {
       const exists = await User.findOne({ username });
       if (exists) return res.status(400).json({ message: "Username already taken." });
     }
 
+    // Check if email is already taken
+    if (email && email !== req.user.email) {
+      const exists = await User.findOne({ email });
+      if (exists) return res.status(400).json({ message: "Email already in use." });
+    }
+
+    const updateData = { username, email, bio, avatar };
+
+    // Only include password in update if it's provided
+    if (password) {
+      updateData.password = password;
+    }
+
     const updated = await User.findByIdAndUpdate(
       req.user._id,
-      { username, bio, avatar },
+      updateData,
       { new: true, runValidators: true }
     );
 
-    res.json({ user: updated });
+    // Return user without password
+    const userResponse = {
+      id: updated._id,
+      username: updated.username,
+      email: updated.email,
+      avatar: updated.avatar,
+      bio: updated.bio,
+    };
+
+    res.json({ user: userResponse });
   } catch (error) {
     if (error.name === "ValidationError") {
       const messages = Object.values(error.errors).map((e) => e.message);
