@@ -1007,13 +1007,10 @@ const ChatBot = () => {
   // User-specific localStorage key
   const storageKey = user ? `streamflow-chatbot-messages-${user.id}` : 'streamflow-chatbot-messages-guest';
 
-  // Hide floating chatbot on all app pages
-  const shouldHideFloatingIcon = location.pathname === '/app' ||
-    location.pathname === '/app/discover' ||
-    location.pathname === '/app/dashboard' ||
-    location.pathname === '/app/chat' ||
-    location.pathname === '/app/chat-ai' ||
-    location.pathname === '/app/settings';
+  // Show floating chatbot only on specific routes
+  const shouldHideFloatingIcon = location.pathname !== '/' &&
+    location.pathname !== '/register' &&
+    location.pathname !== '/login';
 
   // Load messages from localStorage on component mount
   const [messages, setMessages] = useState(() => {

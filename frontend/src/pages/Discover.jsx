@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Compass, Search, Filter, Clock, TrendingUp, Users } from "lucide-react";
 import { streamsAPI } from "../utils/api";
+import { useToast } from "../context/ToastContext";
 import StreamCard from "../components/stream/StreamCard";
 import LoadingSkeleton from "../components/ui/LoadingSkeleton";
 
@@ -16,6 +17,7 @@ const Discover = () => {
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState("all");
   const [sortBy, setSortBy] = useState("recent");
+  const { error: showError } = useToast();
 
   useEffect(() => {
     const fetchStreams = async () => {
@@ -39,14 +41,14 @@ const Discover = () => {
 
         setStreams(data.streams);
       } catch (err) {
-        console.error("Failed to fetch streams:", err);
+        showError(err.message || "Failed to fetch streams");
       } finally {
         setLoading(false);
       }
     };
 
     fetchStreams();
-  }, [activeCategory, sortBy]);
+  }, [activeCategory, sortBy, showError]);
 
   return (
     <div className="flex gap-6 p-8 fade-in" style={{ height: 'calc(100vh - 64px)' }}>

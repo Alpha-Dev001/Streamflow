@@ -5,11 +5,13 @@ import { streamsAPI } from "../utils/api";
 import useViewer from "../hooks/useViewer";
 import Chat from "../components/stream/Chat";
 import { useSocket } from "../context/SocketContext";
+import { useToast } from "../context/ToastContext";
 import LoadingSkeleton from "../components/ui/LoadingSkeleton";
 
 const Watch = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { error: showError } = useToast();
   const [stream, setStream] = useState(null);
   const [loading, setLoading] = useState(true);
   const [viewerCount, setViewerCount] = useState(0);
@@ -26,7 +28,8 @@ const Watch = () => {
         setStream(data.stream);
         setViewerCount(data.stream.viewerCount || 0);
       } catch (err) {
-        console.error("Stream not found:", err);
+        showError(err.message || "Stream not found");
+        navigate("/app/discover");
       } finally {
         setLoading(false);
       }
@@ -36,7 +39,7 @@ const Watch = () => {
 
     const interval = setInterval(fetchStream, 5000);
     return () => clearInterval(interval);
-  }, [id]);
+  }, [id, navigate, showError]);
 
   useEffect(() => {
     if (stream && socket) {

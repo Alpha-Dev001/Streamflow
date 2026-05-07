@@ -22,6 +22,7 @@ const setupSocket = (io) => {
 
   const rooms = new Map();
   const connectionMetrics = new Map();
+  const broadcasterHealth = new Map();
 
   io.on("connection", (socket) => {
     console.log(`🔌 Socket connected: ${socket.id}`);
@@ -65,6 +66,13 @@ const setupSocket = (io) => {
           isLive: true,
           startedAt: new Date(),
           endedAt: null,
+        });
+
+        // Track broadcaster health
+        broadcasterHealth.set(streamId, {
+          socketId: socket.id,
+          lastHeartbeat: Date.now(),
+          isActive: true
         });
 
         socket.to(streamId).emit("broadcaster-joined", { broadcasterId: socket.id });
@@ -148,6 +156,17 @@ const setupSocket = (io) => {
       }
     });
 
+    // Broadcaster heartbeat to maintain stream health
+    socket.on("broadcaster-heartbeat", async ({ streamId }) => {
+      if (socket.role === "broadcaster" && socket.streamId === streamId) {
+        const health = broadcasterHealth.get(streamId);
+        if (health) {
+          health.lastHeartbeat = Date.now();
+          health.isActive = true;
+        }
+      }
+    });
+
     socket.on("disconnect", async () => {
       console.log(`🔌 Socket disconnected: ${socket.id}`);
       connectionMetrics.delete(socket.id);
@@ -178,7 +197,14 @@ const setupSocket = (io) => {
         }
       }
 
-      if (role === "broadcaster") {
+      // Enhanced cleanup: Check if this socket was the broadcaster for this stream
+      const health = broadcasterHealth.get(streamId);
+      const isBroadcaster = role === "broadcaster" || (health && health.socketId === socket.id);
+
+      if (isBroadcaster) {
+        // Clean up broadcaster health tracking
+        broadcasterHealth.delete(streamId);
+
         await Stream.findByIdAndUpdate(streamId, {
           isLive: false,
           endedAt: new Date(),
@@ -199,6 +225,64 @@ const setupSocket = (io) => {
       }
     });
   });
+
+  // Periodic health check for broadcasters (every 30 seconds)
+  const HEALTH_CHECK_INTERVAL = 30000; // 30 seconds
+  setInterval(async () => {
+    const now = Date.now();
+
+    for (const [streamId, health] of broadcasterHealth.entries()) {
+      if (now - health.lastHeartbeat > HEALTH_CHECK_INTERVAL) {
+        console.log(`🔍 Inactive broadcaster detected for stream ${streamId}, cleaning up...`);
+
+        // Check if socket is still connected
+        const socket = io.sockets.sockets.get(health.socketId);
+        if (!socket || socket.disconnected) {
+          // Clean up inactive stream
+          await Stream.findByIdAndUpdate(streamId, {
+            isLive: false,
+            endedAt: new Date(),
+            viewerCount: 0,
+          });
+
+          broadcasterHealth.delete(streamId);
+
+          // Notify viewers in the room
+          io.to(streamId).emit("broadcaster-left");
+          console.log(`🧹 Cleaned up inactive stream ${streamId}`);
+        }
+      }
+    }
+  }, HEALTH_CHECK_INTERVAL);
+
+  // Periodic cleanup for orphaned live streams (every 5 minutes)
+  setInterval(async () => {
+    try {
+      const orphanedStreams = await Stream.find({
+        isLive: true,
+        startedAt: { $lt: new Date(Date.now() - 10 * 60 * 1000) } // Streams live for more than 10 minutes
+      });
+
+      for (const stream of orphanedStreams) {
+        const health = broadcasterHealth.get(stream._id.toString());
+        const room = rooms.get(stream._id.toString());
+
+        // If no health tracking or no active broadcaster in room, clean up
+        if (!health || !room || room.size === 0) {
+          await Stream.findByIdAndUpdate(stream._id, {
+            isLive: false,
+            endedAt: new Date(),
+            viewerCount: 0,
+          });
+
+          broadcasterHealth.delete(stream._id.toString());
+          console.log(`🧹 Cleaned up orphaned stream ${stream._id}`);
+        }
+      }
+    } catch (error) {
+      console.error('Error cleaning up orphaned streams:', error);
+    }
+  }, 5 * 60 * 1000); // 5 minutes
 };
 
 module.exports = setupSocket;

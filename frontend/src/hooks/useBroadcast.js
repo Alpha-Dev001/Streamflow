@@ -24,6 +24,8 @@ const useBroadcast = (streamId, videoRef) => {
   const socket = useSocket();
   const peersRef = useRef({});
   const localStreamRef = useRef(null);
+  const heartbeatIntervalRef = useRef(null);
+  const isStreamingRef = useRef(false);
 
   const startBroadcast = useCallback(async (useScreenShare = false) => {
     try {
@@ -65,6 +67,7 @@ const useBroadcast = (streamId, videoRef) => {
       }
 
       localStreamRef.current = stream;
+      isStreamingRef.current = true;
 
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
@@ -72,6 +75,13 @@ const useBroadcast = (streamId, videoRef) => {
       }
 
       socket.emit("join-stream", { streamId, role: "broadcaster" });
+
+      // Start sending heartbeats every 15 seconds
+      heartbeatIntervalRef.current = setInterval(() => {
+        if (socket && isStreamingRef.current) {
+          socket.emit("broadcaster-heartbeat", { streamId });
+        }
+      }, 15000);
 
       return stream;
     } catch (err) {
@@ -132,6 +142,14 @@ const useBroadcast = (streamId, videoRef) => {
   }, [startBroadcast]);
 
   const stopBroadcast = useCallback(() => {
+    // Stop heartbeat
+    if (heartbeatIntervalRef.current) {
+      clearInterval(heartbeatIntervalRef.current);
+      heartbeatIntervalRef.current = null;
+    }
+
+    isStreamingRef.current = false;
+
     if (localStreamRef.current) {
       localStreamRef.current.getTracks().forEach((track) => track.stop());
       localStreamRef.current = null;
@@ -185,6 +203,11 @@ const useBroadcast = (streamId, videoRef) => {
       socket.off("webrtc-answer", handleAnswer);
       socket.off("ice-candidate", handleIceCandidate);
       socket.off("viewer-left", handleViewerLeft);
+
+      // Cleanup heartbeat on unmount
+      if (heartbeatIntervalRef.current) {
+        clearInterval(heartbeatIntervalRef.current);
+      }
     };
   }, [socket, createPeerForViewer]);
 

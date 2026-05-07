@@ -4,6 +4,7 @@ import { streamsAPI } from "../utils/api";
 import useBroadcast from "../hooks/useBroadcast";
 import { useSocket } from "../context/SocketContext";
 import { useAuth } from "../context/AuthContext";
+import { useToast } from "../context/ToastContext";
 import Chat from "../components/stream/Chat";
 import LoadingSkeleton from "../components/ui/LoadingSkeleton";
 
@@ -12,12 +13,12 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [isLive, setIsLive] = useState(false);
   const [viewerCount, setViewerCount] = useState(0);
-  const [error, setError] = useState("");
   const [isScreenSharing, setIsScreenSharing] = useState(false);
 
   const videoRef = useRef(null);
   const socket = useSocket();
   const { user, isLoggedIn } = useAuth();
+  const { error: showError, success: showSuccess } = useToast();
   const { startBroadcast, stopBroadcast, toggleScreenShare } = useBroadcast(stream?._id, videoRef);
 
   useEffect(() => {
@@ -26,7 +27,7 @@ const Dashboard = () => {
         const data = await streamsAPI.getMyStream();
         setStream(data.stream);
       } catch (err) {
-        setError(err.message);
+        showError(err.message || "Failed to load stream data");
       } finally {
         setLoading(false);
       }
@@ -44,11 +45,11 @@ const Dashboard = () => {
 
   const handleGoLive = async () => {
     try {
-      setError("");
       await startBroadcast();
       setIsLive(true);
+      showSuccess("Stream started successfully!");
     } catch (err) {
-      setError(err.message);
+      showError(err.message || "Failed to start stream");
     }
   };
 
@@ -57,14 +58,16 @@ const Dashboard = () => {
     setIsLive(false);
     setViewerCount(0);
     setIsScreenSharing(false);
+    showSuccess("Stream ended successfully");
   };
 
   const handleToggleScreenShare = async () => {
     try {
       await toggleScreenShare();
       setIsScreenSharing(!isScreenSharing);
+      showSuccess(isScreenSharing ? "Screen sharing stopped" : "Screen sharing started");
     } catch (err) {
-      setError(err.message);
+      showError(err.message || "Failed to toggle screen sharing");
     }
   };
 
@@ -94,13 +97,6 @@ const Dashboard = () => {
           <p className="text-gray-500 text-sm mt-1">Manage and broadcast your stream</p>
         </div>
 
-        {error && (
-          <div className="mb-6 p-4 rounded-xl text-sm text-red-400"
-            style={{ background: "rgba(255,59,59,0.08)", border: "1px solid rgba(255,59,59,0.2)" }}
-          >
-            {error}
-          </div>
-        )}
       </div>
 
       <div className="flex-1 flex gap-6 px-8" style={{ marginRight: "330px" }}>

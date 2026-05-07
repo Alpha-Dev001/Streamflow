@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { User, Bell, Shield, LogOut, Video, Key, Copy, RefreshCw, Check } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import { useToast } from "../context/ToastContext";
 import { streamsAPI } from "../utils/api";
 
 const Settings = () => {
   const { user, logout } = useAuth();
+  const { success: showSuccess, error: showError } = useToast();
   const [activeTab, setActiveTab] = useState("account");
   const [stream, setStream] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -41,6 +43,7 @@ const Settings = () => {
   const copyKey = () => {
     navigator.clipboard.writeText(stream.streamKey);
     setCopiedKey(true);
+    showSuccess("Stream key copied to clipboard!");
     setTimeout(() => setCopiedKey(false), 2000);
   };
 
@@ -49,8 +52,9 @@ const Settings = () => {
     try {
       const data = await streamsAPI.regenerateKey();
       setStream({ ...stream, streamKey: data.streamKey });
+      showSuccess("Stream key regenerated successfully!");
     } catch (err) {
-      console.error("Failed to regenerate key:", err);
+      showError(err.message || "Failed to regenerate stream key");
     }
   };
 
@@ -59,8 +63,9 @@ const Settings = () => {
     try {
       const data = await streamsAPI.updateMyStream({ title: editTitle, category: editCategory, thumbnailUrl: editThumbnailUrl });
       setStream(data.stream);
+      showSuccess("Stream settings saved successfully!");
     } catch (err) {
-      console.error("Failed to save stream settings:", err);
+      showError(err.message || "Failed to save stream settings");
     } finally {
       setSaving(false);
     }

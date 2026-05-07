@@ -1,6 +1,8 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { SocketProvider } from "./context/SocketContext";
+import { ToastProvider } from "./context/ToastContext";
+import { Toaster } from "react-hot-toast";
 import Sidebar from "./components/layout/Sidebar";
 import ChatBot from "./components/chat/ChatBot";
 import Landing from "./pages/Landing";
@@ -34,75 +36,98 @@ const MainLayout = ({ children }) => (
 );
 
 const AppRoutes = () => {
+  const { isLoggedIn } = useAuth();
+  const location = useLocation();
+  const isNotFoundPage = location.pathname === '*' || location.pathname === '/404';
+
   return (
-    <SocketProvider>
-      <Routes>
-        {/* Landing Page - Public */}
-        <Route path="/" element={<Landing />} />
+    <ToastProvider>
+      <SocketProvider>
+        <Routes>
+          {/* Landing Page - Public */}
+          <Route path="/" element={
+            isLoggedIn ? <Navigate to="/app" replace /> : <Landing />
+          } />
 
-        {/* Auth Pages - Public */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+          {/* Auth Pages - Public */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
 
-        {/* App Pages - Protected */}
-        <Route
-          path="/watch/:id"
-          element={
-            <ProtectedRoute>
-              <Watch />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/app"
-          element={
-            <ProtectedRoute>
-              <MainLayout><Home /></MainLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/app/discover"
-          element={
-            <ProtectedRoute>
-              <MainLayout><Discover /></MainLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/app/chat-ai"
-          element={
-            <ProtectedRoute>
-              <MainLayout><ChatAI /></MainLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/app/dashboard"
-          element={
-            <ProtectedRoute>
-              <MainLayout><Dashboard /></MainLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/app/settings"
-          element={
-            <ProtectedRoute>
-              <MainLayout><Settings /></MainLayout>
-            </ProtectedRoute>
-          }
-        />
+          {/* App Pages - Protected */}
+          <Route
+            path="/watch/:id"
+            element={
+              <ProtectedRoute>
+                <Watch />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/app"
+            element={
+              <ProtectedRoute>
+                <MainLayout><Home /></MainLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/app/discover"
+            element={
+              <ProtectedRoute>
+                <MainLayout><Discover /></MainLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/app/chat-ai"
+            element={
+              <ProtectedRoute>
+                <MainLayout><ChatAI /></MainLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/app/dashboard"
+            element={
+              <ProtectedRoute>
+                <MainLayout><Dashboard /></MainLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/app/settings"
+            element={
+              <ProtectedRoute>
+                <MainLayout><Settings /></MainLayout>
+              </ProtectedRoute>
+            }
+          />
 
-        {/* Legacy redirects */}
-        <Route path="/home" element={<Navigate to="/app" replace />} />
-        <Route path="/discover" element={<Navigate to="/app/discover" replace />} />
-        <Route path="/dashboard" element={<Navigate to="/app/dashboard" replace />} />
+          {/* Legacy redirects */}
+          <Route path="/home" element={<Navigate to="/app" replace />} />
+          <Route path="/discover" element={<Navigate to="/app/discover" replace />} />
+          <Route path="/dashboard" element={<Navigate to="/app/dashboard" replace />} />
 
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-      <ChatBot />
-    </SocketProvider>
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+        {!isNotFoundPage && <ChatBot />}
+        <Toaster
+          toastOptions={{
+            style: {
+              background: 'transparent',
+              border: 'none',
+              padding: '0',
+              margin: '0',
+            },
+          }}
+          containerStyle={{
+            top: '20px',
+            right: '20px',
+            zIndex: 9999,
+          }}
+        />
+      </SocketProvider>
+    </ToastProvider>
   );
 };
 

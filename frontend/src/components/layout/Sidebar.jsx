@@ -1,5 +1,6 @@
+import { useState, useEffect, useRef } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { Home, Compass, Radio, User, LogOut, Tv, Bot, Settings } from "lucide-react";
+import { Home, Compass, Radio, User, LogOut, Tv, Bot, Settings, ChevronDown } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 
 const navItems = [
@@ -13,11 +14,42 @@ const navItems = [
 const Sidebar = () => {
   const { user, logout, isLoggedIn } = useAuth();
   const navigate = useNavigate();
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const dropdownRef = useRef(null);
 
   const handleLogout = () => {
     logout();
     navigate("/login");
   };
+
+  const handleLogoutClick = () => {
+    setShowLogoutConfirm(true);
+  };
+
+  const confirmLogout = () => {
+    handleLogout();
+    setShowLogoutConfirm(false);
+  };
+
+  const cancelLogout = () => {
+    setShowLogoutConfirm(false);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowLogoutConfirm(false);
+      }
+    };
+
+    if (showLogoutConfirm) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showLogoutConfirm]);
 
   return (
     <aside className="fixed left-0 top-0 h-full w-64 flex flex-col z-50"
@@ -74,13 +106,36 @@ const Sidebar = () => {
                 <p className="text-gray-500 text-xs truncate">{user?.email}</p>
               </div>
             </div>
-            <button
-              onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-4 py-2 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 text-sm transition-all"
-            >
-              <LogOut size={16} />
-              Logout
-            </button>
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={handleLogoutClick}
+                className="w-full flex items-center gap-3 px-4 py-2 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 text-sm transition-all"
+              >
+                <LogOut size={16} />
+                Logout
+              </button>
+
+              {/* Logout Confirmation Dropdown */}
+              {showLogoutConfirm && (
+                <div className="absolute bottom-full left-0 right-0 mb-2 p-4 bg-black border border-gray-800 rounded-lg shadow-lg shadow-gray-900/50">
+                  <p className="text-white text-sm font-medium mb-4"> Log out? You'll have to sign back in.</p>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={cancelLogout}
+                      className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-gray-300 bg-gray-800 hover:bg-gray-700 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={confirmLogout}
+                      className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-white bg-red-800 hover:bg-red-900 transition-colors"
+                    >
+                      Log Out
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         ) : (
           <NavLink

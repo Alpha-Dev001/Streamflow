@@ -3,7 +3,7 @@ import { Home, Search, ArrowLeft, AlertCircle } from "lucide-react";
 
 const NotFound = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-black  overflow-hidden">
 
 
       {/* Main Content */}
@@ -23,14 +23,6 @@ const NotFound = () => {
           >
             <Home size={16} />
             <span>Back to Home</span>
-          </Link>
-
-          <Link
-            to="/app/discover"
-            className="glass-card inline-flex items-center gap-2 px-4 py-2 text-white rounded-lg hover:bg-white/10 transition-all duration-300 border border-white/10 hover:border-white/20"
-          >
-            <Search size={16} />
-            <span>Discover Streams</span>
           </Link>
         </div>
       </div>

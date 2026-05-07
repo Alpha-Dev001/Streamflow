@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Send } from "lucide-react";
 import { useSocket } from "../../context/SocketContext";
 import { useAuth } from "../../context/AuthContext";
+import { useToast } from "../../context/ToastContext";
 import { streamsAPI } from "../../utils/api";
 
 const Chat = ({ streamId }) => {
@@ -9,6 +10,7 @@ const Chat = ({ streamId }) => {
   const [input, setInput] = useState("");
   const socket = useSocket();
   const { user, isLoggedIn } = useAuth();
+  const { error: showError } = useToast();
   const bottomRef = useRef(null); // for auto-scrolling
 
   // Load last 50 messages when chat opens
@@ -18,12 +20,12 @@ const Chat = ({ streamId }) => {
         const data = await streamsAPI.getMessages(streamId);
         setMessages(data.messages);
       } catch (err) {
-        console.error("Failed to load messages:", err);
+        showError("Failed to load chat messages");
       }
     };
 
     loadMessages();
-  }, [streamId]);
+  }, [streamId, showError]);
 
   // Listen for new messages from socket
   useEffect(() => {
